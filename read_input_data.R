@@ -9,14 +9,12 @@ load_data = function(){
              stringsAsFactors=FALSE,
              dec=",")
 
-  
   dt$Year <- year(dmy_hm(dt$DateTime))
   dt$Month <- month(dmy_hm(dt$DateTime))
   dt$Day <- day(dmy_hm(dt$DateTime))
   dt$Hour <- hour(dmy_hm(dt$DateTime))
   dt$Minute <- minute(dmy_hm(dt$DateTime))
   dt$DateTime <- dmy_hm(dt$DateTime)
-  
   
   return(dt)
   

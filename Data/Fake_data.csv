@@ -1,4 +1,4 @@
-ProductID;HeatID;DateTime;Practice;Grade;chem1;chem2;chem3;procvar1;procvar2;procvar3;procvar4;procvar5
+ID;HeatID;DateTime;Practice;Grade;chem1;chem2;chem3;procvar1;procvar2;procvar3;procvar4;procvar5
 p1;H11111;24/7/18 14.27;AABBCC;G1;0,12;0,66;0,06;1,45;0,73;12,81;3,58;16,2
 p2;H11111;24/7/18 15.24;AABBCC;G1;0,17;0,71;0,09;1,41;0,71;9;3;9,9
 p3;H11111;24/7/18 16.22;AABBCC;G1;0,11;0,65;0,06;1,32;0,66;12,66;3,56;17,25
