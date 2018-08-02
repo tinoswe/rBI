@@ -40,7 +40,6 @@ shinyApp(
                             fluidRow(
                               box(width = 12, 
                                   title = "", 
-                                  #splitLayout(
                                     box(width=3,
                                         title="",
                                         h5(textOutput("summarytxt_1")),
@@ -50,8 +49,27 @@ shinyApp(
                                     box(width=9,
                                         title="",
                                         plotOutput("outplot_summary")
-                                        #) 
-                                  ) ) ) ) ) ) ) ,
+                                        ) 
+                                   
+                                  ) 
+                              ),
+                            fluidRow(
+                              box(width=12,
+                                  title="",
+                                  box(width=3,
+                                      title=""),
+                                  box(width=9,
+                                      title="",
+                                      selectInput("summary_xvar",
+                                                  "X var: ",
+                                                  choices=c()))
+                                  )
+                              
+                            )
+                            ) 
+                   ) 
+                 ) 
+               ) ,
       tabPanel("Scatterplots", "This panel is intentionally left blank"),
       tabPanel("Histograms", "This panel is intentionally left blank") 
     )
@@ -107,8 +125,9 @@ shinyApp(
       
       if(!is.null(dt())){
         df <- dt()
-        dfg <- as.data.frame(table(df$Grade))$Var1
-        dfgc <- as.data.frame(table(df$Grade))$Freq
+        xvar <- input$summary_xvar
+        dfg <- as.data.frame(table(df[,xvar,with=FALSE]))$Var1 
+        dfgc <- as.data.frame(table(df[,xvar,with=FALSE]))$Freq
         plot( dfg, dfgc )
       }
       
@@ -118,8 +137,8 @@ shinyApp(
     observe({
       if (!is.null(dt())){
         df_ <- dt()
-        
         practice_list <- unique(df_$Practice)
+        
         updateCheckboxGroupInput(session,
                                  inputId = "practiceIn",
                                  choices = practice_list,
@@ -137,6 +156,10 @@ shinyApp(
                                  choices = heat_list,
                                  selected = heat_list,
                                  inline = FALSE)
+        summary_xVarList <- updateSelectInput(session,
+                                              inputId="summary_xvar",
+                                              choices=colnames(df_[,c(4,5)])
+                                              )
       }
     })
     
@@ -166,6 +189,7 @@ shinyApp(
                                  choices = input$heat,
                                  selected = available_Heats,
                                  inline = FALSE)
+
       }
     })
     
