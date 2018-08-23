@@ -40,8 +40,12 @@ shinyApp(
                             fluidRow(
                               box(width = 12, 
                                   title = "", 
-                                    box(width=3,
-                                        title="",
+                                    box(title="",
+                                        width=3,
+                                        #background="maroon",
+                                        #status = "primary",
+                                        #collapsible = TRUE,
+                                        #solidHeader = TRUE,
                                         h5(textOutput("summarytxt_1")),
                                         h5(textOutput("summarytxt_2")),
                                         h5(textOutput("summarytxt_3"))
@@ -54,15 +58,32 @@ shinyApp(
                                   ) 
                               ),
                             fluidRow(
+                              #tags$head(
+                              #  tags$style(type="text/css", "label.control-label, .selectize-control.single{ display: table-cell; text-align: center; vertical-align: middle; } .form-group { display: table-row;}")
+                              #),
                               box(width=12,
                                   title="",
                                   box(width=3,
                                       title=""),
                                   box(width=9,
                                       title="",
-                                      selectInput("summary_xvar",
-                                                  "X var: ",
-                                                  choices=c()))
+                                      box(width=5,
+                                          title="",
+                                          selectInput("summary_xvar",
+                                                      "X axis: ",
+                                                      choices=c())
+                                          ),
+                                      box(width=5,
+                                          title="",
+                                          selectInput("summary_yvar",
+                                                      "Y axis: ",
+                                                      choices=c())
+                                          ),
+                                      box(width=2,
+                                          title="",
+                                          downloadButton('downloadPlot', 'Download Plot')
+                                          )
+                                    )
                                   )
                               
                             )
@@ -160,6 +181,10 @@ shinyApp(
                                               inputId="summary_xvar",
                                               choices=colnames(df_[,c(4,5)])
                                               )
+        summary_yVarList <- updateSelectInput(session,
+                                              inputId="summary_yvar",
+                                              choices=colnames(df_[,c(1,2)])
+        )
       }
     })
     
