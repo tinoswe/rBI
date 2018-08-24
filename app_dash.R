@@ -1,106 +1,126 @@
-library(shiny)
-library(shinydashboard)
+require(shiny)
+require(shinydashboard)
+require(shinyjs)
+require(shinyWidgets)
+require(data.table)
+require(lubridate)
+require(dplyr)
+require(tidyr)
+require(DT)
 
 ui <- dashboardPage(
-  
+  useShinyjs(),
   dashboardHeader(title = "L2 Data Analysis"),
+  
   dashboardSidebar(
       br(),
-      sidebarMenuOutput("menu"),
-      sidebarMenuOutput("filters"),
-      sidebarMenuOutput("summary"),
-      sidebarMenuOutput("analysis"),
-      sidebarMenuOutput("help")
-  ),
+      sidebarMenu(id="x",
+                  sidebarMenuOutput("menu"))
+      ),
   
   dashboardBody(
+    useShinyjs(),
     tabItems(
       tabItem(tabName = "about",
               h5("A webapp for the analysis of level 2 data")),
       tabItem(tabName = "loaddata",
-                fileInput("dfile",
-                          "File input:", 
-                          accept = c("text/csv","text/comma-separated-values,text/plain",".csv")
-                          )
-              )
+              fileInput("datafile",
+                        "Choose input file:", 
+                        accept = c("text/csv","text/comma-separated-values,text/plain",".csv")
+                        ),
+              actionButton("resetinputfile", 'Reset'),
+              tableOutput("table")
+              ),
+      tabItem(tabName="clearall",
+              br()
+      )
       )
     )
   )
 
-server <- function(input, output) {
 
-  output$help <- renderMenu({
-    sidebarMenu(
-      menuItem("About",
-               tabName = "about",
-               icon = icon("question-circle"))
-    )
+server <- function(input, output, session) {
+
+  useShinyjs(),
+  
+  # read input file and store into object
+  dt <- reactive({
+    inFile <- input$datafile
+    if (is.null(inFile))
+      return(NULL)
+    df <- fread(inFile$datapath,
+                sep=",", 
+                header=T, 
+                stringsAsFactors=FALSE,
+                dec=".")
+    df
   })
+
+  observeEvent(input$resetinputfile, {
+    reset(datafile)
+  }, priority = 1000)
+  
+  #output table
+  output$table <- renderTable({
+    df <- dt()
+  },
+  align = "c")
   
   output$menu <- renderMenu({
-    sidebarMenu(
-      menuItem("Load Data",
-               tabName = "loaddata", 
-               icon = icon("clone"))
-    )
-  })
-  
-  output$filters <- renderMenu({
-    sidebarMenu(
-      menuItem("Filters",
-               tabName = "filters", 
-               icon = icon("filter"),
-               menuSubItem('Time',
-                           tabName = 'time',
-                           icon = ""),
-               menuSubItem('Practice',
-                           tabName = 'practice',
-                           icon = ""), #icon('line-chart')),
-               menuSubItem('Grade',
-                           tabName = 'grade',
-                           icon = ""), #icon('line-chart')),
-               menuSubItem('Heat',
-                           tabName = 'heat',
-                           icon = "") #icon('line-chart'))
+    if (!is.null(dt())) {
+      sidebarMenu(
+        menuItem("Input Data",
+                 tabName = "loaddata", 
+                 icon = icon("clone")),
+        menuItem("Filters",
+                 tabName = "filters", 
+                 icon = icon("filter")
+                 ),
+        menuItem("Summary",
+                 tabName = "summary", 
+                 icon = icon("clipboard"),
+                 menuSubItem("Export Filtered Data",
+                             tabName = "",
+                             icon = ""),
+                 menuSubItem("Clear All Data",
+                             tabName = "clearall",
+                             icon = "")),
+        menuItem("Data Analysis",
+                 tabName = "dataanalysis", 
+                 icon = icon("flask"),
+                 menuSubItem("Scatterplots",
+                             tabName = "scatter",
+                             icon = ""),
+                 menuSubItem("Histograms",
+                             tabName = "histo",
+                             icon = ""), 
+                 menuSubItem("QCA",#Qualitative Comparative Analysis (categorical vars)
+                             tabName = "comp",
+                             icon = ""), 
+                 menuSubItem("Fancy Algorithms",
+                             tabName = "ml",
+                             icon = ""), 
+                 menuSubItem("Customized Analysis",
+                             tabName = "custom",
+                             icon = "") 
+                 ),
+        menuItem("About",
+                 tabName = "about",
+                 icon = icon("question-circle"))
+        )}
+    else{
+      sidebarMenu(
+        menuItem("Input Data",
+                 tabName = "loaddata", 
+                 icon = icon("clone")
+                 ),
+        menuItem("About",
+                 tabName = "about",
+                 icon = icon("question-circle")
+                 )
       )
-    )
+    }
   })
-  
-  output$summary <- renderMenu({
-    sidebarMenu(
-      menuItem("Summary",
-               tabName = "summary", 
-               icon = icon("clipboard"),
-               menuSubItem("Export Filtered Data",
-                           tabName = "",
-                           icon = ""))
-    )
-  })
-  
-  output$analysis <- renderMenu({
-    sidebarMenu(
-      menuItem("Data Analysis",
-               tabName = "dataanalysis", 
-               icon = icon("flask"),
-               menuSubItem("Scatterplots",
-                           tabName = "scatter",
-                           icon = ""),
-               menuSubItem("Histograms",
-                           tabName = "histo",
-                           icon = ""), 
-               menuSubItem("QCA",#Qualitative Comparative Analysis (categorical vars)
-                           tabName = "comp",
-                           icon = ""), 
-               menuSubItem("Fancy Algorithms",
-                           tabName = "ml",
-                           icon = ""), 
-               menuSubItem("Customized Analysis",
-                           tabName = "custom",
-                           icon = "") 
-      )
-    )
-  })
-  
 }
 
 shinyApp(ui, server)
