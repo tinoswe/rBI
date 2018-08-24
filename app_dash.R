@@ -9,7 +9,7 @@ require(tidyr)
 require(DT)
 
 ui <- dashboardPage(
-  useShinyjs(),
+  
   dashboardHeader(title = "L2 Data Analysis"),
   
   dashboardSidebar(
@@ -28,11 +28,16 @@ ui <- dashboardPage(
                         "Choose input file:", 
                         accept = c("text/csv","text/comma-separated-values,text/plain",".csv")
                         ),
-              actionButton("resetinputfile", 'Reset'),
+              #actionButton("resetinputfile", 'Reset'),
               tableOutput("table")
               ),
       tabItem(tabName="clearall",
-              br()
+              br(),
+              #h4("ciao"),
+              #fileInput("upfile", "Choose File:"),
+              actionButton("resetinputfile", 'Reset')
+              
+              
       )
       )
     )
@@ -41,7 +46,9 @@ ui <- dashboardPage(
 
 server <- function(input, output, session) {
 
-  useShinyjs(),
+  observeEvent(input$resetinputfile, {
+    reset("datafile")
+    })
   
   # read input file and store into object
   dt <- reactive({
@@ -56,9 +63,9 @@ server <- function(input, output, session) {
     df
   })
 
-  observeEvent(input$resetinputfile, {
-    reset(datafile)
-  }, priority = 1000)
+  #observeEvent(input$resetinputfile, {
+  #  reset(datafile)
+  #}, priority = 1000)
   
   #output table
   output$table <- renderTable({
