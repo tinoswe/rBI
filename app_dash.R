@@ -32,11 +32,13 @@ ui <- dashboardPage(
               h5("A webapp for the analysis of level 2 data")),
       tabItem(tabName = "loaddata",
               fileInput("datafile",
-                        "Choose input file:", 
+                        "", 
                         accept = c("text/csv","text/comma-separated-values,text/plain",".csv")
-                        ),
-              tableOutput("table")
+                        )#,
+              #tableOutput("table")
               ),
+      tabItem(tabName = "thedata",
+              tableOutput("table")),
       tabItem(tabName="clearall",
               actionButton("resetinputfile", "Reset")
       )
@@ -110,10 +112,13 @@ server <- function(input, output, session) {
   output$menu <- renderMenu({
     if (!is.null(rv$data)) {
       sidebarMenu(
-        menuItem("Input Data",
+        menuItem("Choose Input Data",
                  tabName = "loaddata", 
                  icon = icon("clone")),
-        menuItem("Data Filters",
+        menuItem("Loaded Data",
+                 tabName = "thedata", 
+                 icon = icon("database")),
+        menuItem("Filters",
                  tabName = "filters", 
                  icon = icon("filter"),
                  HTML('
@@ -191,7 +196,7 @@ server <- function(input, output, session) {
         )}
     else{
       sidebarMenu(
-        menuItem("Input Data",
+        menuItem("Choose Input Data",
                  tabName = "loaddata", 
                  icon = icon("clone")
                  ),
