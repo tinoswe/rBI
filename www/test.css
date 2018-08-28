@@ -1,0 +1,14 @@
+label[for="practices"] { display:none; }
+label[for="grades"] { display:none; }
+label[for="heats"] { display:none; }
+
+input[type=checkbox] {
+  transform: scale(1);
+}
+
+label {
+    display: block;
+    text-indent: 1.3em;
+    color: #D3D3D3;
+}
+
